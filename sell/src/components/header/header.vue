@@ -1,16 +1,16 @@
 <template>
-  <div class='header1'>
-      I am a header1
+  <div class='header'>
+      I am a header
      
   </div>
 </template>
 
 <script>
 export default {
-    name:'header1',
+    name:'v-header',
 }
 
 </script>
-<!--<style lang='stylus' rel='stylesheet/stylus'>-->
-<style>
+<style lang='stylus' rel='stylesheet/stylus'>
+
 </style>
