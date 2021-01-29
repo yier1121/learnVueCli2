@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <v-header></v-header>
+    <v-header :seller='seller'></v-header>
     <div class='tab '>
       <div class='tab-item'>
         <router-link to='/goods' class='rLink'>商品</router-link></div>
@@ -19,8 +19,31 @@
 
 <script>
 import header from './components/header/header.vue';
+const ERR_OK = 0;
 export default {
   name: 'App',
+  data() {
+    return {
+      seller: {}
+    };
+  },
+  created() {
+    // this.$http.get('/api/seller').then((response) => {
+    //   response = response.body;//相当于网络请求返回的json对象
+    //   console.log(response);
+    //   if(response.errno === ERR_OK) {
+    //     this.seller = response.data;
+    //     console.log(this.seller);
+    //   }
+    // });
+    this.$http.get('/api/seller').then((response)=>{
+      response=response.body;
+      if(response.errno === ERR_OK) {
+        this.seller = response.data;
+
+      }
+    });
+  },
   components: {
     "v-header":header,
   }
