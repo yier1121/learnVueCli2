@@ -43,19 +43,14 @@
         </li>
       </ul>
     </div>
-    <div class='shopchart'>
-      <div class='cart'><span class='icon-shopping_cart'></span></div>
-      <div class='totalprice'>$20</div>
-      <div class='peisong'>另需配送费2$</div>
-      <div class='qisong'>$20起送</div>
-      
-    </div>
+    <shopcart></shopcart>
 
   </div>
 </template>
 
 <script>
 import BScroll from 'better-scroll'
+import shopcart from '../shopcart/shopcart.vue';
 const ERR_OK = 0;
 
 export default {
@@ -73,6 +68,10 @@ export default {
         count: 0
         
       }
+    },
+    components: {
+      shopcart
+        
     },
     computed:{
       currentIndex() {
@@ -254,36 +253,6 @@ export default {
             .old 
               text-decoration: line-through 
               font-size: 10px 
-              color: rgb(147,153,159)
-  .shopchart
-    display: flex
-    position: fixed 
-    height: 48px
-    line-height: 48px
-    text-align: center
-    width: 100%
-    bottom: 0
-    right: 0
-    background: rgba(7,17,27,0.5)    
-    .cart
-      flex: 0 0 12.5%
-    .totalprice
-      flex: 0 0 12.5%
-    .peisong 
-      flex: 0 0 50%
-    .qisong 
-      border-left: 1px solid #fff
-      flex: 0 0 25%      
-
-            
-
-
-
-
-          
-
-
-
-
-        
+              color: rgb(147,153,159)           
+     
 </style>
