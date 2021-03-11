@@ -29,34 +29,33 @@
                   <span class='now'>${{food.price}}</span>
                   <span class='old' v-show='food.oldPrice'>{{food.oldPrice}}</span>
                 </div>
-                <div class='addfoods'>
-                  <i class='icon-remove_circle_outline' v-show='count > 0'  @click='()=>{count--}'></i>
-                  <span class='count'>{{count}}</span>
-                  <i class='icon-add_circle' @click ='()=>{count++}'></i>
-
-                  <span></span>
+                <div class='cartcontrol-wrapperr'>
+                  <cartcontrol :food='food'></cartcontrol>
                 </div>
-                </div>
+                
+              </div>
 
             </li>
           </ul>
         </li>
       </ul>
     </div>
-    <shopcart></shopcart>
+    <shopcart :selected-foods='selectedFoods' :delivery-price='seller.deliveryPrice' :min-price='seller.minPrice'></shopcart>
 
   </div>
 </template>
 
 <script>
 import BScroll from 'better-scroll'
-import shopcart from '../shopcart/shopcart.vue';
+import shopcart from '../shopcart/shopcart';
+import cartcontrol from '../cartcontrol/cartcontrol'
 const ERR_OK = 0;
 
 export default {
     // name: 'goods'
     props: {
       seller:{
+        type: Object,
 
       }
     },
@@ -65,12 +64,14 @@ export default {
         goods: [],
         listHeight: [],
         scrollY: 0,
-        count: 0
+        count: 0,
+        
         
       }
     },
     components: {
-      shopcart
+      shopcart,
+      cartcontrol,
         
     },
     computed:{
@@ -86,6 +87,20 @@ export default {
           
         }
         return 0
+
+      },
+      selectedFoods() {
+        let foods = [];
+        this.goods.forEach((good) =>{
+          good.foods.forEach((food) => {
+            if(food.count) {
+              foods.push(food)
+
+            }
+
+          })
+        });
+        return foods;
 
       }
     },
@@ -241,11 +256,6 @@ export default {
           .price 
             font-weight: 700 
             line-height: 24px
-          .addfoods 
-            position: absolute
-            right: 2px
-            bottom: 2px
-
             .now 
               margin-right: 8px 
               font-size: 14px 
@@ -254,5 +264,8 @@ export default {
               text-decoration: line-through 
               font-size: 10px 
               color: rgb(147,153,159)           
-     
+          .cartcontrol-wrapperr 
+            position: absolute 
+            right: 0 
+            bottom: -12px
 </style>

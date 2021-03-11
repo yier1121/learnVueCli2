@@ -1,45 +1,122 @@
 <template>
-  <div class='shopcart'>
-      <div class='content'>
+  <div class='shopcart' >
+      <div class='content' @click='toggleList'>
           <div class='content-left'>
               <div class='logo-wrapper'>
-                  <div class='logo' >
-                    <i class='icon-shopping_cart'></i>
+                  <div class='logo' :class="{'highlight':totalCount>0}" >
+                    <i class='icon-shopping_cart' :class="{'highlight': totalCount>0}"></i>
                   </div>
-                  <div class='num'></div>
+                  <div class='num' v-show='totalCount>0'>{{totalCount}}</div>
               </div>
-              <div class='price'>￥0</div>
-              <div class='desc'>另需配送费0￥</div>             
+              <div class='price' :class="{'highlight':totalPrice>0}">￥{{totalPrice}}</div>
+              <div class='desc'>另需配送费￥{{deliveryPrice}}</div>             
 
           </div>
           <div class='content-right'>
-              <div class='pay'>20起送</div>
+              <div class='pay' :class='payClass'>{{payDesc}}</div>
+
           </div>
       </div>
       <div class='ball-container'>
-          <div class='food-cart'>
-            <div class='desc'>
-                <div class='shop-cart'>购物车</div>
-                <div  class='clear'>清空</div>
-            </div>  
-            <ul>
-                <li v-for='(item,index) in foodcart' :key='index' class='food-item'>
-                    <span class='item'>{{item}}</span>  
-                      
-                </li>
-            </ul>
-              
-
+      </div>
+      <div class='showcart-list' v-show='listshow'>
+          <div class='list-header'>
+              <span class='title'>购物车</span>
+              <span class='empty'>清空</span>
+          </div>
+          <div class='list-content'>
+              <ul>
+                  <li class='food' v-for='(food,index) in selectedFoods' :key='index'>
+                        <span class='name'>{{food.name}}</span>
+                        <span class='price'>{{food.price * food.count}}</span>
+                        <div calss='cartcontrol-wrapper'>
+                            <cartcontrol :food='food'></cartcontrol>
+                        </div>
+                  </li>
+              </ul>
           </div>
       </div>
   </div>
 </template>
 
 <script>
+import cartcontrol from '../cartcontrol/cartcontrol.vue';
 export default {
+  components: { cartcontrol },
+    props: {
+        selectedFoods: {
+            type: Array,
+            default() {
+                return [
+                    {
+                        price: 20,
+                        count: 1
+                    }
+                ]
+            }
+        },
+        deliveryPrice: {
+            type: Number,
+            default: 0
+        },
+        minPrice: {
+            type: Number,
+            default: 0
+        }
+
+    },
     data() {
         return{
-            foodcart: ['莲子核桃黑米粥','莲子核桃黑米粥','莲子核桃黑米粥']
+            listshow: false,
+        }
+
+    },
+    components: {
+        cartcontrol,
+    },
+    computed: {
+        totalPrice() {
+            let total = 0; 
+            this.selectedFoods.forEach((food) => {
+                total += food.price * food.count;
+            });
+            return total;
+
+        },
+        totalCount() {
+            let count = 0;
+            this.selectedFoods.forEach((food) => {
+                count += food.count;
+
+            });
+            return count;
+        },
+        payDesc() {
+            if (this.totalPrice === 0) {
+                return `￥${this.minPrice}起送`;
+            } else if (this.totalPrice < this.minPrice) {
+                let diff = this.minPrice - this.totalPrice;
+                return `还差￥${diff}元起送`;
+            } else {
+                return `结算`
+            }
+        },
+        payClass() {
+            if(this.totalPrice < this.minPrice) {
+                return `not-enough`;
+            } else {
+                return `enough`;
+            }
+        },
+
+    },
+    methods: {
+        toggleList() {
+            if(this.totalCount === 0) {
+                return; 
+            } else {
+                this.listshow = !this.listshow;
+            }
         }
     }
 
@@ -80,8 +157,28 @@ export default {
                         background: #2b343c
                         text-align: center
                         line-height: 48px
+                        &.highlight 
+                            background: rgb(0,160,220)
                         .icon-shopping_cart
                             font-size: 24px
+                            &.highlight 
+                                color: #fff
+
+                    .num 
+                        position: absolute 
+                        top: 0 
+                        right: 0
+                        width: 24px
+                        height: 16px 
+                        line-height: 16px 
+                        text-align: center 
+                        border-radius: 16px 
+                        font-size: 9px
+                        font-weight: 700 
+                        color: #fff 
+                        background: rgb(240,20,20)
+
+                            
                 
                 .price 
                     display: inline-block
@@ -93,6 +190,8 @@ export default {
                     border-right: 1px solid rgba(255,255,255,0.1)
                     font-size: 16px 
                     font-weight: 700
+                    &.highlight 
+                        color: #fff
 
                 .desc 
                     display: inline-block
@@ -111,55 +210,28 @@ export default {
                     font-size: 12px
                     font-weight: 700
                     background: #2b333b
-        .ball-container 
-            position: fixed 
-            width: 100% 
-            height: 100%
+                    &.not-enough
+                        background: #2b333b
+                    &.enough
+                        background: #00b43c
+                        color: #fff
+
+        // .ball-container 
+        .showcart-list 
+            position: absolute 
             top: 0 
-            left 0
-            z-index: 49
-            background: rgba(7,17,27,0.5)
-            .food-cart 
-                position: absolute 
-                width: 100%
-                right: 0 
-                bottom: 48px
-                .desc 
-                    width: 100% 
-                    height: 40px
-                    line-height: 40px
-                    background: #fff 
-                    font-size: 0  
-                    padding: 0 12px
-                    box-sizing: border-box
-                    .shop-cart 
-                        display: inline-block 
-                        width: 50%
-                        font-size: 16px 
-                        text-align: left 
-                        
-                    .clear 
-                        display: inline-block 
-                        width: 50%
-                        text-align: right
-                        font-size: 14px
-                        
+            left: 0
+            z-index: -1
+            background:　rgbs(7,17,27,0.1)
+            .list-header 
+                height: 40px 
+                line-height: 40px 
+                background: #f3f5f7 
+            .list-content 
+                max-height: 217px
+                background: #fff 
 
-
-                .food-item 
-                    display: table
-                    width: 100%
-                    height: 56px
-                    background: #fff
-                    padding-left: 16px
-                    .item 
-                        display: table-cell
-                        width: 100%
-                        vertical-align: middle
-                        border-top: 1px solid rgba(7,17,27,0.1)
-
-
-                
+            
                 
                 
 
